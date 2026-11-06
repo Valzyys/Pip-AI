@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pip-ai",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-10-01",
+  "observability": { "enabled": true },
+
+  // The React app (built by Vite) is served as static assets.
+  // Only /api/* requests run the Worker; everything else is an asset hit.
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Chat is powered by the JKT48Connect Pip AI API (OpenAI-compatible).
+  // The key is a secret:  npx wrangler secret put PIP_API_KEY
+  // Locally, put it in .dev.vars (see .dev.vars.example).
+  "vars": {
+    "PIP_API_BASE": "https://api.jkt48connect.app/v1"
+  }
+}
