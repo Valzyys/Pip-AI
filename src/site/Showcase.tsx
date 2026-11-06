@@ -89,7 +89,7 @@ export function Showcase() {
   );
 
   return (
-    <section className="showcase" id="produk" ref={root}>
+    <section className="showcase" id="lampiran" ref={root}>
       <div className="showcase__copy">
         <p className="label">Pip Chat</p>
         <h2 className="h2 js-lines">Kirim foto. Dapat jawaban.</h2>
