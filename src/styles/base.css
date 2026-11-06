@@ -96,12 +96,3 @@ button:disabled {
   margin: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001s !important;
-    animation-iteration-count: 1 !important;
-    transition: none !important;
-  }
-}
