@@ -1,0 +1,2 @@
+# Copy to .dev.vars for local development (never commit .dev.vars)
+PIP_API_KEY=jkc_your_developer_key_here
