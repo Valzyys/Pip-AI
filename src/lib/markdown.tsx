@@ -12,6 +12,7 @@ type Block =
   | { t: "h"; level: number; text: string }
   | { t: "ul" | "ol"; items: string[] }
   | { t: "quote"; text: string }
+  | { t: "table"; head: string[]; align: ("left" | "center" | "right")[]; rows: string[][] }
   | { t: "p"; text: string };
 
 function parse(src: string): Block[] {
@@ -38,6 +39,23 @@ function parse(src: string): Block[] {
         body.push(lines[i]);
       }
       blocks.push({ t: "code", lang: fence[1] || "", text: body.join("\n"), open });
+      continue;
+    }
+    // GitHub-style table: header row, then a |---|:---:| separator
+    if (/^\s*\|.*\|\s*$/.test(line) && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(lines[i + 1])) {
+      flush();
+      const cells = (l: string) => l.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      const head = cells(line);
+      const align = cells(lines[i + 1]).map((c) => (c.startsWith(":") && c.endsWith(":") ? "center" : c.endsWith(":") ? "right" : "left")) as (
+        | "left"
+        | "center"
+        | "right"
+      )[];
+      const rows: string[][] = [];
+      i += 2;
+      while (i < lines.length && /^\s*\|/.test(lines[i])) rows.push(cells(lines[i++]));
+      i--;
+      blocks.push({ t: "table", head, align, rows });
       continue;
     }
     const h = line.match(/^(#{1,4})\s+(.*)/);
@@ -186,6 +204,33 @@ export function Markdown({ text }: { text: string }) {
               </Tag>
             );
           }
+          case "table":
+            return (
+              <div key={i} className="md-table">
+                <table>
+                  <thead>
+                    <tr>
+                      {b.head.map((c, j) => (
+                        <th key={j} style={{ textAlign: b.align[j] ?? "left" }}>
+                          {inline(c, `th${i}-${j}`)}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {b.rows.map((r, ri) => (
+                      <tr key={ri}>
+                        {b.head.map((_, j) => (
+                          <td key={j} style={{ textAlign: b.align[j] ?? "left" }}>
+                            {inline(r[j] ?? "", `td${i}-${ri}-${j}`)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
           case "quote":
             return (
               <blockquote key={i} className="md-quote">

@@ -15,6 +15,10 @@
   // Chat is powered by the JKT48Connect Pip AI API (OpenAI-compatible).
   // The key is a secret:  npx wrangler secret put PIP_API_KEY
   // Locally, put it in .dev.vars (see .dev.vars.example).
+  // Workers AI turns attachments (images, PDF, DOCX, XLSX…) into text for Pip,
+  // because the Pip API itself only accepts text. Used by /api/read.
+  "ai": { "binding": "AI" },
+
   "vars": {
     "PIP_API_BASE": "https://api.jkt48connect.app/v1"
   }
