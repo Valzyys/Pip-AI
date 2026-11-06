@@ -502,10 +502,12 @@ html[data-pip-mode="pip-docs"] .ios,
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
   padding-bottom: 150px; /* room behind the floating dock */
 }
 .pc-msgs {
   width: min(760px, 100%);
+  min-width: 0;
   margin: 0 auto;
   padding: 8px 16px 20px;
   display: flex;
@@ -568,7 +570,10 @@ html[data-pip-mode="pip-docs"] .ios,
 }
 .pc-row--pip {
   display: grid;
+  /* minmax(0, 1fr): wide children (horizontal card rails, tables, code) scroll inside instead of widening the page */
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+  min-width: 0;
 }
 .pc-who {
   display: flex;
@@ -586,12 +591,15 @@ html[data-pip-mode="pip-docs"] .ios,
 }
 .pc-body {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 10px;
   justify-items: start;
   min-width: 0;
 }
 .pc-text {
   max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
   font-size: 16.5px;
   line-height: 1.6;
   -webkit-touch-callout: none;

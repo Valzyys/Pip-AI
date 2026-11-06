@@ -104,7 +104,7 @@ export function ChatApp() {
     gsap.to(main, { x: drawer ? DW() : 0, scale: drawer ? 0.92 : 1, borderRadius: drawer ? 28 : 0, duration: 0.5, ease: "expo.out" });
     gsap.to(panel, { xPercent: drawer ? 0 : -25, duration: 0.5, ease: "expo.out" });
     gsap.to(".dr-scrim", { autoAlpha: drawer ? 1 : 0, duration: 0.35 });
-    if (drawer) gsap.from(".dr-item", { x: -16, autoAlpha: 0, duration: 0.45, stagger: 0.025, ease: "power3.out", delay: 0.08 });
+    if (drawer) gsap.fromTo(".dr-item", { x: -16, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 0.45, stagger: 0.025, ease: "power3.out", delay: 0.08, overwrite: true });
   }, [drawer, desktop]);
 
   useEffect(() => {

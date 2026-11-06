@@ -512,9 +512,11 @@ export function ToolPart({ part, onPrompt, animate }: { part: Extract<Part, { ki
   useEffect(() => {
     if (!animate || reducedMotion || part.status !== "done" || !ref.current) return;
     const el = ref.current;
-    gsap.fromTo(el, { y: 16, scale: 0.96, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: 0.6, ease: "back.out(1.4)" });
+    gsap.fromTo(el, { y: 16, scale: 0.96, autoAlpha: 0 }, { y: 0, scale: 1, autoAlpha: 1, duration: 0.6, ease: "back.out(1.4)", overwrite: true });
     const kids = el.querySelectorAll(".w-row, .mtile, .avatar, .rc, .chip, .ub > *, .wx-days > div, .bd-count > span");
-    if (kids.length) gsap.from(kids, { y: 10, autoAlpha: 0, duration: 0.45, stagger: 0.035, delay: 0.12, ease: "power2.out" });
+    // fromTo (not from): if the effect re-runs mid-animation, `from` would freeze items half-transparent
+    if (kids.length)
+      gsap.fromTo(kids, { y: 10, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.45, stagger: 0.035, delay: 0.12, ease: "power2.out", overwrite: true });
   }, [part.status, animate]);
 
   if (part.status === "running")
