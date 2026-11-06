@@ -6,8 +6,7 @@ A landing page and chat app for **Pip**, the assistant from the JKT48Connect Pip
 - **GSAP only** for motion: ScrollSmoother, ScrollTrigger, SplitText, Flip, CustomEase, `@gsap/react`
 - **Cloudflare Workers**: static assets plus a small API Worker. The API key never reaches the browser.
 
-![landing](previews/desktop-site-sheet.png)
-![chat](previews/desktop-chat-sheet.png)
+<img src="previews/mobile-m1-pip.png" width="250"> <img src="previews/mobile-m4-code.png" width="250"> <img src="previews/mobile-m5-docs.png" width="250">
 
 ## Pages
 
@@ -22,7 +21,9 @@ A landing page and chat app for **Pip**, the assistant from the JKT48Connect Pip
 | Developer | Tabs for curl, Python, Codex and Claude Code, with animated line swaps and a copy button. |
 | CTA + footer | A gradient block skyline fills up as you scroll, and a pixel `PIP` wordmark assembles. |
 
-**`/chat`, the chat app**: a light layout with conversation history in the sidebar (saved in the browser).
+**`/chat`, the chat app**: an iPhone-style AI chat with a floating composer, a history drawer (swipe from the left edge) and three modes, each with its own expertise, theme and motion — **Pip** (JKT48 & everyday), **Pip Code** (engineering, mini apps) and **Pip Docs** (JKT48Connect API reference). Switching modes plays a circular theme wipe.
+
+Pip can call tools in an agent loop run by the Worker: JKT48 schedule, show details, members & profiles, birthdays, news, who is live, live recaps and setlists (from api.jkt48connect.app), plus weather and a calculator. Results render as interactive cards. `show_ui` lets Pip assemble native UI (charts, quizzes, polls, checklists, countdowns, tables, timelines, buttons) and `build_app` lets it write a mini app that runs in a sandboxed iframe with no network access.
 
 - **Attaching files.** Use the paperclip, drag and drop anywhere, or paste images. You can add up to 6 files, each up to 10 MB. Each attachment chip shows its reading status.
 - **Composer.** It starts centred and glides to the bottom (GSAP Flip) once the conversation begins. It holds the profile picker and a stop button.

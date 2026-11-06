@@ -11,16 +11,24 @@ export interface StreamResult {
 
 export class PipError extends Error {}
 
+export type ChatEvent =
+  | { t: "text"; d: string }
+  | { t: "tool"; id: string; name: string; args: unknown }
+  | { t: "tool_done"; id: string; name: string; ok: boolean; ui?: Record<string, unknown>; error?: string }
+  | { t: "status"; message: string }
+  | { t: "round" }
+  | { t: "done" }
+  | { t: "error"; message: string };
+
 /**
- * Streams Pip's reply through the Cloudflare Worker (/api/chat → JKT48Connect Pip AI API).
- * If the Worker has no API key configured (or isn't running, e.g. plain static hosting),
- * it falls back to a tiny offline brain so the demo still works. Real upstream errors
- * (rate limits, etc.) are surfaced as a PipError instead of a fake answer.
+ * Talks to the Worker's agent loop (/api/chat). The response is NDJSON: text deltas,
+ * tool starts and tool results (with UI payloads for interactive cards).
+ * Falls back to a tiny offline brain when the Worker has no API key configured.
  */
-export async function streamReply(
+export async function streamChat(
   model: ModelKey,
   messages: ChatMessage[],
-  onChunk: (text: string) => void,
+  onEvent: (e: ChatEvent) => void,
   signal?: AbortSignal,
 ): Promise<StreamResult> {
   let res: Response;
@@ -33,29 +41,42 @@ export async function streamReply(
     });
   } catch (err) {
     if (signal?.aborted) throw err;
-    return offline(messages, onChunk, signal);
+    return offline(messages, (d) => onEvent({ t: "text", d }), signal);
   }
 
   const type = res.headers.get("content-type") ?? "";
-  if (!res.ok || !res.body || !type.startsWith("text/plain")) {
+  if (!res.ok || !res.body || !type.includes("ndjson")) {
     const data = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
-    if (!data || data.code === "not_configured" || res.status === 404) return offline(messages, onChunk, signal);
+    if (!data || data.code === "not_configured" || res.status === 404) return offline(messages, (d) => onEvent({ t: "text", d }), signal);
     throw new PipError(data.error ?? "Pip couldn't answer right now.");
   }
 
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
-  let got = false;
+  let buffer = "";
+  let any = false;
+  const handle = (line: string) => {
+    if (!line.trim()) return;
+    let e: ChatEvent;
+    try {
+      e = JSON.parse(line) as ChatEvent;
+    } catch {
+      return;
+    }
+    if (e.t === "error") throw new PipError(e.message);
+    if (e.t === "text" || e.t === "tool_done") any = true;
+    onEvent(e);
+  };
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    const text = decoder.decode(value, { stream: true });
-    if (text) {
-      got = true;
-      onChunk(text);
-    }
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    lines.forEach(handle);
   }
-  if (!got) throw new PipError("Pip went quiet. Try asking again.");
+  if (buffer) handle(buffer);
+  if (!any) throw new PipError("Pip tidak menjawab. Coba tanya lagi.");
   return { source: "live" };
 }
 
