@@ -1,0 +1,107 @@
+/* =========================================================
+   Pip — shared tokens
+   ========================================================= */
+:root {
+  --bg: #0f0e0c;
+  --bg-2: #171612;
+  --bg-3: #201e19;
+  --fg: #f5f1e8;
+  --mute: rgba(245, 241, 232, 0.6);
+  --faint: rgba(245, 241, 232, 0.38);
+  --line: rgba(245, 241, 232, 0.11);
+
+  --r1: #ffe36e;
+  --r2: #ffc93c;
+  --r3: #ffa62b;
+  --r4: #ff7a1a;
+  --r5: #f2541b;
+
+  --f-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace;
+
+  --gutter: clamp(16px, 3.4vw, 48px);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body {
+  overflow-x: hidden;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+::selection {
+  background: var(--r2);
+  color: #111;
+}
+:focus-visible {
+  outline: 2px solid var(--r3);
+  outline-offset: 3px;
+}
+.sprite {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* pixel grids (icons / blocks) */
+.px-grid {
+  display: grid;
+  width: 100%;
+}
+.px-grid i {
+  display: block;
+  aspect-ratio: 1;
+}
+.px-on {
+  background: currentColor;
+}
+
+/* mono label */
+.label {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+  }
+}

@@ -1,65 +1,79 @@
 # Pip-AI
 
-A landing page and live chat for **Pip**, the assistant from the JKT48Connect Pip AI API. Pip is drawn as a tiny pixel bird with a big brain.
+A landing page and chat app for **Pip**, the assistant from the JKT48Connect Pip AI API. Pip can **read attachments**: photos, screenshots, PDFs, Word and Excel files, CSVs, and text or code files.
 
 - **React 18 + TypeScript**, built with Vite
-- **GSAP only** for motion: ScrollSmoother (smooth scroll), ScrollTrigger, SplitText, CustomEase, `@gsap/react`
-- **Cloudflare Workers**: static assets plus a Worker at `/api/chat` that forwards chat requests to the Pip API. The API key never reaches the browser.
+- **GSAP only** for motion: ScrollSmoother, ScrollTrigger, SplitText, Flip, CustomEase, `@gsap/react`
+- **Cloudflare Workers**: static assets plus a small API Worker. The API key never reaches the browser.
 
-![desktop](previews/desktop-sheet.png)
+![landing](previews/desktop-site-sheet.png)
+![chat](previews/desktop-chat-sheet.png)
 
-## What's on the page
+## Pages
+
+**`/`, the landing page**: dark, calm, and grid-lined, with pixel accents limited to flat gradient blocks and a small Pip sprite.
 
 | Section | Motion |
 | --- | --- |
-| Preloader | An egg wobbles while a counter runs from 0 to 100%, then cracks and Pip hatches. Pixel columns slide away to reveal the hero. |
-| Hero | Characters drop in with a mask. Blocks fall with a bounce, Pip lands with a squash and stretch, blinks, hops, and turns to face the cursor. Clicking Pip makes it jump and release pixel hearts. On scroll the scene breaks up with parallax. |
-| Marquee | Two rows that loop forever. Speed, direction and skew follow your scroll velocity. |
-| Manifesto | Words light up one by one as you scroll, with highlights that draw in. |
-| Capabilities | A pinned section that scrolls sideways. Each card plays its own small animation: bars, code typing, a scan, a tool-call list. |
-| Try Pip | A live chat that streams from the API. It types a first prompt by itself when you scroll to it. Three profiles: `pip`, `pip-code`, `pip-docs`. |
-| Numbers / Profiles | Counters, stepped pixel bars, 3D tilt cards with a corner that floods with color. |
-| Pixel wipe → CTA → Footer | The dark page dissolves into lime pixel by pixel. Buttons pull toward the cursor, and the `PIP` wordmark assembles from scattered pixels. |
+| Hero | Grid lines draw in and the title rises line by line. Gradient blocks drop and stack into steps, Pip lands on top, and files keep dropping into Pip. |
+| Pip Chat (pinned) | Scrolling plays one full chat turn in a product mock: a receipt is attached, the question types itself, Pip reads the file, and the answer streams in. |
+| Capabilities | A bordered grid where the pixel icons assemble pixel by pixel and ripple on hover. |
+| Profiles | Block towers drop in for `pip`, `pip-code` and `pip-docs`. Each card has a "try" prompt that opens the chat. |
+| Developer | Tabs for curl, Python, Codex and Claude Code, with animated line swaps and a copy button. |
+| CTA + footer | A gradient block skyline fills up as you scroll, and a pixel `PIP` wordmark assembles. |
 
-It also has a custom pixel cursor, a menu that unfolds in columns, and a header that hides as you scroll down. The layout is responsive, and `prefers-reduced-motion` is respected.
+**`/chat`, the chat app**: a light layout with conversation history in the sidebar (saved in the browser).
+
+- **Attaching files.** Use the paperclip, drag and drop anywhere, or paste images. You can add up to 6 files, each up to 10 MB. Each attachment chip shows its reading status.
+- **Composer.** It starts centred and glides to the bottom (GSAP Flip) once the conversation begins. It holds the profile picker and a stop button.
+- **Replies** stream in as Markdown, with syntax-highlighted code, tables and copy buttons, plus actions to copy or regenerate.
+
+## How Pip reads files
+
+The Pip API only accepts text, so the Worker converts each attachment to text and sends it to Pip as context.
+
+| File | Handled by |
+| --- | --- |
+| Text and code (`.txt .md .csv .json .js .py …`) | Read in the browser |
+| Images (any format the browser can open) | Downscaled to ≤1600px JPEG in the browser, then `/api/read` → Workers AI vision model (`@cf/meta/llama-4-scout-17b-16e-instruct`) describes the image and transcribes its text |
+| PDF, DOCX, XLSX, ODS, ODT, Numbers | `/api/read` → Workers AI `toMarkdown` |
 
 ## Develop
 
 ```bash
 npm install
-cp .dev.vars.example .dev.vars   # put your jkc_… developer key in PIP_API_KEY
-npm run dev                      # Vite + local Workers runtime (workerd)
+cp .dev.vars.example .dev.vars        # put your jkc_… developer key in PIP_API_KEY
+npm run dev                           # chat works; image/document reading needs Workers AI ↓
+npx wrangler login && PIP_REMOTE=1 npm run dev   # also read images/documents locally
 ```
-
-If no key is set, the chat falls back to a small set of offline replies, so the page still works.
 
 ## Deploy to Cloudflare
 
 ```bash
 npx wrangler login
-npx wrangler secret put PIP_API_KEY   # paste the key; it is stored encrypted on Cloudflare
-npm run deploy                        # tsc + vite build + wrangler deploy
+npx wrangler secret put PIP_API_KEY   # stored encrypted on Cloudflare
+npm run deploy
 ```
 
-Config is in `wrangler.jsonc`. `PIP_API_BASE` defaults to `https://api.jkt48connect.app/v1`.
+Workers AI comes with the `AI` binding in `wrangler.jsonc`. The free plan includes a daily allowance.
 
 ## API (Worker)
 
 | Route | Description |
 | --- | --- |
-| `POST /api/chat` | `{ model: "pip" \| "pip-code" \| "pip-docs", messages: [{ role, content }] }`. Returns a `text/plain` stream. Requests from other origins are rejected. |
-| `GET /api/health` | `{ ok, configured }` |
+| `POST /api/chat` | `{ model, messages }` → `text/plain` stream from the Pip API |
+| `POST /api/read` | `multipart/form-data` with `file` → `{ name, kind, text, via }` |
+| `GET /api/health` | `{ ok, chat, read }` |
 
-Upstream status codes from the gateway (429, 413, 502, …) are mapped to friendly messages. The site's 401 is never passed on to visitors.
+Both POST routes reject requests from other origins. Upstream errors are mapped to friendly Indonesian messages.
 
 ## Structure
 
 ```
-worker/index.ts          Cloudflare Worker (API proxy → JKT48Connect Pip API)
-src/App.tsx              ScrollSmoother + shared heading reveals
-src/components/*         Preloader, Nav, Hero, Marquee, Manifesto, Features, Demo, Sections, Cursor, Sprite
-src/lib/gsap.ts          Plugin registration + house eases (pip.out / pip.inOut / pip.pop)
-src/lib/sprites.ts       Hand-drawn pixel sprites (rendered as crisp SVG)
-src/lib/chat.ts          Streaming client + offline fallback
-previews/                Desktop & mobile screenshots
+worker/index.ts        API Worker (chat proxy + attachment reading)
+src/site/*             Landing page sections
+src/chat/*             Chat app, composer, attachment handling (files.ts)
+src/components/*       Sprite, Pixels (DOM pixel grids for animated icons/blocks)
+src/lib/*              gsap setup, router, markdown renderer, chat streaming, storage
+previews/              Desktop & mobile screenshots
 ```
