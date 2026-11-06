@@ -3,14 +3,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { SplitText } from "gsap/SplitText";
 import { CustomEase } from "gsap/CustomEase";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, CustomEase, useGSAP);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, CustomEase, MotionPathPlugin, useGSAP);
 
-// House eases — used everywhere so motion feels like one system.
-CustomEase.create("pip.out", "0.16, 1, 0.3, 1"); // long, soft landing
-CustomEase.create("pip.inOut", "0.76, 0, 0.24, 1"); // curtain / wipe
-CustomEase.create("pip.pop", "0.34, 1.56, 0.64, 1"); // overshoot
+// House eases. Smooth ones for camera/scroll, stepped ones for anything "pixel" so it
+// moves like a sprite on an 8-bit screen instead of a generic web fade.
+CustomEase.create("pip.out", "0.16, 1, 0.3, 1");
+CustomEase.create("pip.inOut", "0.76, 0, 0.24, 1");
+CustomEase.create("pip.pop", "0.34, 1.56, 0.64, 1");
 
 gsap.defaults({ ease: "pip.out", duration: 1 });
 
@@ -19,13 +21,6 @@ export const reducedMotion =
 
 export const isTouch =
   typeof window !== "undefined" && window.matchMedia("(hover: none), (pointer: coarse)").matches;
-
-/** Scroll to an element, going through ScrollSmoother when it is active. */
-export function scrollToTarget(selector: string) {
-  const smoother = ScrollSmoother.get();
-  if (smoother) smoother.scrollTo(selector, true, "top top");
-  else document.querySelector(selector)?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
-}
 
 export { gsap, ScrollTrigger, ScrollSmoother, SplitText, useGSAP };
 

@@ -3,25 +3,34 @@
 A landing page and live chat for **Pip**, the assistant from the JKT48Connect Pip AI API. Pip is drawn as a tiny pixel bird with a big brain.
 
 - **React 18 + TypeScript**, built with Vite
-- **GSAP only** for motion: ScrollSmoother (smooth scroll), ScrollTrigger, SplitText, CustomEase, `@gsap/react`
+- **GSAP only** for motion: ScrollSmoother, ScrollTrigger, MotionPath, SplitText, CustomEase, `@gsap/react`
 - **Cloudflare Workers**: static assets plus a Worker at `/api/chat` that forwards chat requests to the Pip API. The API key never reaches the browser.
 
-![desktop](previews/desktop-sheet.png)
+![landing](previews/desktop-landing-sheet.png)
+![room](previews/desktop-room-sheet.png)
 
-## What's on the page
+## The landing page: a fall into Pip's nest
 
-| Section | Motion |
+You scroll *down through a world* instead of past stacked sections. An altimeter on the right edge tracks your height.
+
+| Stop | What happens |
 | --- | --- |
-| Preloader | An egg wobbles while a counter runs from 0 to 100%, then cracks and Pip hatches. Pixel columns slide away to reveal the hero. |
-| Hero | Characters drop in with a mask. Blocks fall with a bounce, Pip lands with a squash and stretch, blinks, hops, and turns to face the cursor. Clicking Pip makes it jump and release pixel hearts. On scroll the scene breaks up with parallax. |
-| Marquee | Two rows that loop forever. Speed, direction and skew follow your scroll velocity. |
-| Manifesto | Words light up one by one as you scroll, with highlights that draw in. |
-| Capabilities | A pinned section that scrolls sideways. Each card plays its own small animation: bars, code typing, a scan, a tool-call list. |
-| Try Pip | A live chat that streams from the API. It types a first prompt by itself when you scroll to it. Three profiles: `pip`, `pip-code`, `pip-docs`. |
-| Numbers / Profiles | Counters, stepped pixel bars, 3D tilt cards with a corner that floods with color. |
-| Pixel wipe → CTA → Footer | The dark page dissolves into lime pixel by pixel. Buttons pull toward the cursor, and the `PIP` wordmark assembles from scattered pixels. |
+| **Sky** (1200m) | A dawn sky with a pixel sun. The title drops in with stepped (8-bit) motion, and each letter jumps on hover. Pip flaps, drifts toward your pointer, and does a loop when clicked. A flock crosses the sky. |
+| **Clouds** (pinned) | Pip opens an umbrella and drifts down while clouds rush past. One line per profile (`pip`, `pip-code`, `pip-docs`) twinkles in pixel by pixel. |
+| **City** (pinned) | A dusk street with three buildings, one per profile. Scrolling makes Pip hop from roof to roof and turns night on. Windows light up and a billboard explains each profile, with a prompt that opens the room with that question. On narrow screens the camera pans. |
+| **Underground** | Circuit cables are drawn to the real positions of the four API endpoints. Data packets flow along them, Pip rides a cable down as you scroll, and a `curl` command types itself. |
+| **Nest** | A wooden door slides open to reveal Pip's lit room, then a big button takes you inside. |
 
-It also has a custom pixel cursor, a menu that unfolds in columns, and a header that hides as you scroll down. The layout is responsive, and `prefers-reduced-motion` is respected.
+## The room (`/room`): the chat
+
+- **Pip's pixel room.** The window follows your real clock (day, dusk, night); click it to cycle. The lamp, poster and rug take the colour of the current profile.
+- **Pip reacts.** Pip leans in while you type, shows a thought bubble while thinking, flaps its beak while a reply streams, smiles with hearts or notes when done, sees stars on an error, and falls asleep (zzz) if you go quiet. Click Pip to pet it.
+- **Profiles as accessories.** `pip` has no accessory, `code` adds headphones, `docs` adds reading glasses. Switching gives a puff of smoke.
+- **Replies arrive in RPG dialog boxes** with Pip's portrait and a ▼ marker. Markdown is rendered safely, with syntax-highlighted code blocks and copy buttons.
+- **Your messages are taped paper notes.** Sending one flies a paper plane to Pip.
+- **The first message offers RPG-style choices**: navigate with ↑ ↓ and send with Enter.
+- **Other controls:** stop a reply mid-stream, retry after an error, sweep the chat away with a broom, and turn on optional 8-bit voice blips (WebAudio, off by default).
+- The conversation is saved in the browser (localStorage).
 
 ## Develop
 
@@ -56,10 +65,14 @@ Upstream status codes from the gateway (429, 413, 502, …) are mapped to friend
 
 ```
 worker/index.ts          Cloudflare Worker (API proxy → JKT48Connect Pip API)
-src/App.tsx              ScrollSmoother + shared heading reveals
-src/components/*         Preloader, Nav, Hero, Marquee, Manifesto, Features, Demo, Sections, Cursor, Sprite
+src/App.tsx              tiny router: "/" → landing, "/room" → chat
+src/landing/*            Sky, Fall, City, Under, Nest, top bar + altimeter
+src/room/*               Room (chat logic) + RoomScene (Pip's room)
+src/components/*         Sprite, PipAvatar (expressions/accessories), Preloader, PixelTransition
 src/lib/gsap.ts          Plugin registration + house eases (pip.out / pip.inOut / pip.pop)
 src/lib/sprites.ts       Hand-drawn pixel sprites (rendered as crisp SVG)
 src/lib/chat.ts          Streaming client + offline fallback
+src/lib/markdown.tsx     Safe Markdown renderer + tiny syntax highlighter
+src/lib/sound.ts         8-bit blips (WebAudio)
 previews/                Desktop & mobile screenshots
 ```

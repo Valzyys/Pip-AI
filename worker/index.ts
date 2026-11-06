@@ -28,7 +28,7 @@ interface ChatMessage {
 const MODELS = new Set(["pip", "pip-code", "pip-docs"]);
 
 const SYSTEM_PROMPT = `You are Pip, the assistant on the Pip-AI website — a tiny pixel bird with a big brain.
-Personality: warm, playful, sharp. Keep answers concise (under 180 words unless the user asks for more).
+Personality: warm, playful, sharp. Keep answers focused (under ~250 words unless the user asks for more).
 Use short paragraphs or simple lists, and code blocks for code. Reply in the user's language
 (Bahasa Indonesia if they write in Indonesian).`;
 
@@ -37,12 +37,12 @@ const MAX_CHARS = 4000;
 
 // Friendly messages for the gateway's documented status codes.
 const UPSTREAM_ERRORS: Record<number, string> = {
-  400: "Pip can't handle that kind of request yet.",
-  401: "Pip's API key is invalid or revoked.",
-  413: "That conversation is too long — start a fresh chat.",
-  429: "Pip is getting a lot of chirps right now. Try again in a minute.",
-  502: "Pip's brain is waking up. Try again in a moment.",
-  503: "Pip is offline for maintenance.",
+  400: "Pip belum bisa memproses permintaan seperti itu.",
+  401: "Kunci API Pip tidak valid.",
+  413: "Obrolannya kepanjangan — mulai obrolan baru ya.",
+  429: "Pip lagi kebanjiran pertanyaan. Coba lagi semenit lagi.",
+  502: "Otak Pip lagi loading. Coba lagi sebentar lagi.",
+  503: "Pip lagi istirahat (maintenance).",
 };
 
 const json = (data: unknown, status = 200) =>
@@ -136,7 +136,7 @@ async function handleChat(request: Request, env: Env, url: URL): Promise<Respons
       body: JSON.stringify({
         model,
         stream: true,
-        max_tokens: 1024,
+        max_tokens: 2048,
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
       }),
     });

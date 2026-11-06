@@ -1,89 +1,98 @@
 /**
  * Hand-drawn pixel sprites. Each row is a string; each char maps to a colour in PALETTE.
- * "." = transparent, "C" = currentColor (so a sprite can be tinted from CSS).
+ * "." = transparent, "C" = currentColor (tint from CSS).
+ * Rows may be shorter than the widest row — they are padded on the right.
  */
 export const PALETTE: Record<string, string> = {
   Y: "#FFC93C", // yolk
   y: "#E39A12", // yolk shadow
   O: "#FF7A1A", // beak / feet
-  K: "#111210", // ink
+  K: "#141018", // ink
   W: "#FFFFFF",
-  E: "#F3EEE3", // egg / paper
-  e: "#CFC6B2", // egg shadow
+  E: "#F6EEDC", // egg / paper
+  e: "#CFC3A8", // egg shadow
   s: "#C6F432", // lime
   L: "#C6F432",
   g: "#7FB21A", // lime dark
   M: "#3FE0A1", // mint
   m: "#1FA877", // mint dark
-  T: "#8A5A2B", // trunk
+  T: "#8A5A2B", // wood
+  t: "#B97C3E", // wood light
   B: "#4AA8FF", // sky
   b: "#2B6FD6", // sky dark
   R: "#FF5FA2", // pink
-  P: "#F3EEE3", // paper
-  c: "#D9D2C2", // cloud shade
-  H: "#FF5FA2", // heart
-  h: "#C2306F",
+  r: "#C2306F", // pink dark
+  P: "#F6EEDC", // paper
+  c: "#D9CDB4", // cloud shade
+  G: "#8E8799", // grey
+  V: "#6B4FD8", // violet
   C: "currentColor",
 };
 
+const PIP_TOP = ["......y.y.....", ".....YYYYY....", "....YYYYYYY...", "...YYYYYYYYY.."];
+const PIP_BODY = [".yyYYYYYYYYYO.", "yyyyYYYYYYYY..", "yyyyyYYYYYYY..", ".yyyyyYYYYYy..", "..yyyyyyyyy..."];
+const PIP_FEET = ["....O...O.....", "...OO..OO....."];
+
 export const SPRITES = {
-  pip: [
+  // ---------- Pip expressions (all 14×14, same silhouette so frames can swap) ----------
+  pip: [...PIP_TOP, "...YYYYYKWYY..", "...YYYYYKKYOO.", "...YYYYYYYYOOO", ...PIP_BODY, ...PIP_FEET],
+  pipBlink: [...PIP_TOP, "...YYYYYYYYY..", "...YYYYKKKYOO.", "...YYYYYYYYOOO", ...PIP_BODY, ...PIP_FEET],
+  pipTalk: [...PIP_TOP, "...YYYYYKWYY..", "...YYYYYKKYOOO", "...YYYYYYYYK..", ".yyYYYYYYYYOOO", ...PIP_BODY.slice(1), ...PIP_FEET],
+  pipHappy: [...PIP_TOP, "...YYYYYYKYY..", "...YYYYYKYKOO.", "...YYYYYYYYOOO", ...PIP_BODY, ...PIP_FEET],
+  pipThink: [
     "......y.y.....",
     ".....YYYYY....",
     "....YYYYYYY...",
+    "...YYYYYKWYY..",
+    "...YYYYYKKYY..",
+    "...YYYYYYYYOO.",
+    "...YYYYYYYYOOO",
+    ...PIP_BODY,
+    ...PIP_FEET,
+  ],
+  pipDizzy: [...PIP_TOP, "...YYYYYKYKY..", "...YYYYYYKYOO.", "...YYYYYKYKOOO", ...PIP_BODY, ...PIP_FEET],
+  pipFlyUp: [
+    ...PIP_TOP,
+    "y..YYYYYKWYY..",
+    "yy.YYYYYKKYOO.",
+    "yyyYYYYYYYYOOO",
+    ".yyYYYYYYYYYO.",
     "...YYYYYYYYY..",
+    "...YYYYYYYYY..",
+    "....YYYYYYYy..",
+    ".....yyyyyy...",
+    "......O.O.....",
+    "..............",
+  ],
+  pipFlyDown: [
+    ...PIP_TOP,
     "...YYYYYKWYY..",
     "...YYYYYKKYOO.",
     "...YYYYYYYYOOO",
     ".yyYYYYYYYYYO.",
     "yyyyYYYYYYYY..",
     "yyyyyYYYYYYY..",
-    ".yyyyyYYYYYy..",
-    "..yyyyyyyyy...",
-    "....O...O.....",
-    "...OO..OO.....",
+    "yyyyyyYYYYYy..",
+    ".yyyy.yyyyy...",
+    "......O.O.....",
+    "..............",
   ],
-  pipBlink: [
-    "......y.y.....",
-    ".....YYYYY....",
-    "....YYYYYYY...",
-    "...YYYYYYYYY..",
-    "...YYYYYYYYY..",
-    "...YYYYKKKYOO.",
-    "...YYYYYYYYOOO",
-    ".yyYYYYYYYYYO.",
-    "yyyyYYYYYYYY..",
-    "yyyyyYYYYYYY..",
-    ".yyyyyYYYYYy..",
-    "..yyyyyyyyy...",
-    "....O...O.....",
-    "...OO..OO.....",
+
+  // ---------- Accessories (14×14 overlays aligned to Pip) ----------
+  hatHeadphones: [
+    "..............",
+    "......KKKK",
+    ".....K....K",
+    "....K......K",
+    "...BBB",
+    "...BbB",
+    "...BBB",
   ],
-  pipCool: [
-    "......y.y.....",
-    ".....YYYYY....",
-    "....YYYYYYY...",
-    "...YYYYYYYYY..",
-    "..KKKKKKKKKKK.",
-    "...YKKKKYKKKOO",
-    "...YYKKYYKKOOO",
-    ".yyYYYYYYYYYO.",
-    "yyyyYYYYYYYY..",
-    "yyyyyYYYYYYY..",
-    ".yyyyyYYYYYy..",
-    "..yyyyyyyyy...",
-    "....O...O.....",
-    "...OO..OO.....",
-  ],
-  pipHead: [
-    "..YYYY...",
-    ".YYYYYY..",
-    "YYYYKWYY.",
-    "YYYYKKYOO",
-    "YYYYYYYO.",
-    ".yYYYYY..",
-    "..yyyy...",
-  ],
+  hatGlasses: ["..............", "", "", ".......KKKK", "....KKKK..K", ".......K..K", ".......KKKK"],
+  hatScarf: ["..............", "", "", "", "", "", "", "...RRRRRRRR", "...rRRRRRRr", "..RR", "..Rr"],
+
+  // ---------- Props ----------
+  pipHead: ["..YYYY...", ".YYYYYY..", "YYYYKWYY.", "YYYYKKYOO", "YYYYYYYO.", ".yYYYYY..", "..yyyy..."],
   egg: [
     "...EEEE...",
     "..EEEEEE..",
@@ -98,87 +107,74 @@ export const SPRITES = {
     "..eeeeee..",
     "...eeee...",
   ],
-  cloud: [
-    ".....PPPP.......",
-    "...PPPPPPPP.....",
-    ".PPPPPPPPPPPPP..",
-    "PPPPPPPPPPPPPPPP",
-    ".cccccccccccccc.",
+  umbrella: [
+    ".....RRRRRR.....",
+    "...RRRRRRRRRR...",
+    "..RRRWRRRRWRRR..",
+    ".RRRWWRRRRWWRRR.",
+    "RRRRWWRRRRWWRRRR",
+    ".r..r..rr..r..r.",
+    ".......K",
+    ".......K",
+    ".......K",
+    ".......K",
+    ".......K",
+    "......KK",
+  ],
+  cloud: [".....PPPP.......", "...PPPPPPPP.....", ".PPPPPPPPPPPPP..", "PPPPPPPPPPPPPPPP", ".cccccccccccccc."],
+  cloudBig: [
+    "..........PPPPP...........",
+    "......PPPPPPPPPPP.........",
+    "....PPPPPPPPPPPPPPPP..PPP.",
+    "..PPPPPPPPPPPPPPPPPPPPPPPP",
+    "PPPPPPPPPPPPPPPPPPPPPPPPPP",
+    ".cccccccccccccccccccccccc.",
   ],
   spark: ["..Y..", "..Y..", "YYWYY", "..Y..", "..Y.."],
-  seed: ["..g..", ".LLL.", "LLLLL", ".LLL.", "..L.."],
-  heart: [".HH.HH.", "HHHHHHH", "HHHHHHH", ".HHHHH.", "..HHH..", "...h..."],
+  star: [".W.", "WWW", ".W."],
+  bird: ["K...K", ".K.K.", "..K.."],
+  heart: [".RR.RR.", "RRRRRRR", "RRRRRRR", ".RRRRR.", "..RRR..", "...r..."],
+  note: ["...KK", "...KK", "...K.", "...K.", "KKKK.", "KKK.."],
+  plane: ["P.......", "PPP.....", "PPPPP...", "PPPPPPPP", ".ccPPP..", "..cc....", "...c...."],
   chev: ["P....", "PP...", ".PP..", "..PP.", ".PP..", "PP...", "P...."],
-  tower: [
-    "....R.....",
-    "....RR....",
-    "....B.....",
-    "...BBB....",
-    "...BWB....",
-    "..BBBBB...",
-    "..BWBWB...",
-    "..BBBBB...",
-    ".bBBBBBb..",
-    ".bWBWBWb..",
-    ".bBBBBBb..",
-    "bbBBBBBbb.",
-    "bWBWBWBWb.",
-    "bBBBBBBBb.",
-    "bBBWWWBBb.",
-    "bBBWWWBBb.",
+  plant: [
+    "...M..M...",
+    "..MMm.MM..",
+    ".MMmMMMmM.",
+    "MmMMmMMMMm",
+    ".MMMMmMMM.",
+    "...MMMM...",
+    "..TTTTTT..",
+    "..TtTTtT..",
+    "...TTTT...",
+    "...TTTT...",
   ],
-  tree: [
-    "....M....",
-    "...MMM...",
-    "..MMmMM..",
-    "..MMMMM..",
-    ".MMmMMMM.",
-    ".MMMMMmM.",
-    "MMMMMMMMM",
-    "MmMMMMMMM",
-    ".MMMMMMM.",
-    "....T....",
-    "....T....",
-    "...TTT...",
+  nest: [".TTtTTtTTtTTtTTtTT.", "TtTTtTTtTTtTTtTTtTT", "TTTtTTTTtTTTTtTTTTT", ".TTTTTTTTTTTTTTTTT."],
+  crt: [
+    "GGGGGGGGGGGGGG",
+    "GKKKKKKKKKKKKG",
+    "GKggggKKggKKKG",
+    "GKKKggggggKKKG",
+    "GKggKKggKKKKKG",
+    "GKKKKggggKKKKG",
+    "GKKKKKKKKKKKKG",
+    "GGGGGGGGGGGGGG",
+    ".....GGGG.....",
+    "...GGGGGGGG...",
   ],
-  bulb: [
-    "..CCCCC..",
-    ".CCCCCCC.",
-    "CCCPCCCCC",
-    "CCPCCCCCC",
-    "CCCCCCCCC",
-    ".CCCCCCC.",
-    "..CCCCC..",
-    "...PPP...",
-    "...PPP...",
+  book: ["RRRRRRRR", "RPPPRPPR", "RPPPRPPR", "RPPPRPPR", "RRRRRRRR", ".rrrrrr."],
+  moon: ["..EEE.", ".EEee.", "EEee..", "EEe...", "EEee..", ".EEee.", "..EEE."],
+  fossil: [
+    "....GG.....",
+    "...GGGG....",
+    "..GG.GGG.G.",
+    ".G..GGGGGG.",
+    "G.G.GG.G..",
+    "...G..G...",
   ],
-  code: [
-    "..C...P.C..",
-    ".C....P..C.",
-    "C....P....C",
-    ".C..P....C.",
-    "..C.P...C..",
-  ],
-  eye: [
-    "...CCCCC...",
-    ".CC.....CC.",
-    "C...PPP...C",
-    "C..PPKPP..C",
-    "C...PPP...C",
-    ".CC.....CC.",
-    "...CCCCC...",
-  ],
-  bolt: [
-    "...CCC.",
-    "..CCC..",
-    ".CCC...",
-    "CCCCCC.",
-    "..CCC..",
-    ".CCC...",
-    ".CC....",
-    "CC.....",
-    "C......",
-  ],
+  broom: ["......T", ".....T.", "....T..", "...T...", "..YY...", ".YYYY..", "YYYYY.."],
+  speaker: ["...C...", "..CC.C.", "CCCC..C", "CCCC..C", "CCCC..C", "..CC.C.", "...C..."],
+  mute: ["...C...", "..CC...", "CCCC.C.C", "CCCC..C.", "CCCC.C.C", "..CC...", "...C..."],
 } as const;
 
 export type SpriteName = keyof typeof SPRITES;
@@ -214,12 +210,14 @@ export function compile(name: SpriteName) {
       x += len;
     }
   });
-  const out = { w, h: rows.length, runs };
+  // overlays are always 14×14 so they line up with Pip
+  const h = name.startsWith("hat") ? 14 : rows.length;
+  const out = { w, h, runs };
   cache.set(name, out);
   return out;
 }
 
-/** 5×7 pixel glyphs for the footer wordmark. */
+/** 5×7 pixel glyphs used for big pixel wordmarks. */
 export const GLYPHS: Record<string, string[]> = {
   P: ["1111", "1001", "1001", "1110", "1000", "1000", "1000"],
   I: ["111", "010", "010", "010", "010", "010", "111"],
