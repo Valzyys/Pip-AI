@@ -10,16 +10,19 @@ A landing page and chat app for **Pip**, the assistant from the JKT48Connect Pip
 
 ## Pages
 
-**`/`, the landing page**: dark, calm, and grid-lined, with pixel accents limited to flat gradient blocks and a small Pip sprite.
+**`/`, the landing page**: dark, solid colours (no gradients), driven by live data from `GET /api/jkt48/home`.
 
 | Section | Motion |
 | --- | --- |
-| Hero | Grid lines draw in and the title rises line by line. Gradient blocks drop and stack into steps, Pip lands on top, and files keep dropping into Pip. |
-| Pip Chat (pinned) | Scrolling plays one full chat turn in a product mock: a receipt is attached, the question types itself, Pip reads the file, and the answer streams in. |
-| Capabilities | A bordered grid where the pixel icons assemble pixel by pixel and ripple on hover. |
-| Profiles | Block towers drop in for `pip`, `pip-code` and `pip-docs`. Each card has a "try" prompt that opens the chat. |
-| Developer | Tabs for curl, Python, Codex and Claude Code, with animated line swaps and a copy button. |
-| CTA + footer | A gradient block skyline fills up as you scroll, and a pixel `PIP` wordmark assembles. |
+| Header | Floating pill. An indicator glides under the hovered link and follows the section on screen; the pill tightens after the hero and tucks away while scrolling down fast. On phones, a full-screen menu unfolds with the next show and birthday. |
+| Hero | The title rises letter by letter. A deck of real member photos keeps shuffling (tap one to ask Pip about her). Blocks drop into steps and Pip lands on top. Live pills show the next show, next birthday and who is live. Pointer parallax, then a scrubbed exit. |
+| Bands | Two crossing marquee bands whose speed and direction follow scroll velocity. |
+| Statement | Words light up as you scroll; member photos pop in between them. |
+| Hari ini | Pinned horizontal rail of real schedule, birthday and news cards with a live countdown, image parallax and tilt. |
+| Modes | Pip, Pip Code and Pip Docs as sticky cards that stack and recede, each in its own theme with a small demo. |
+| Lampiran | Pinned product mock playing a chat turn with an attachment. |
+| Member | Columns of member photos drifting in opposite directions behind a panel. |
+| Footer | Giant link with rolling letters, live tiles (next show countdown, next birthday, Jakarta clock), link columns, a ground of blocks Pip walks along, a `PIP` pixel wordmark that reacts to the cursor, and back-to-top with a scroll progress ring. |
 
 **`/chat`, the chat app**: an iPhone-style AI chat with a floating composer, a history drawer (swipe from the left edge) and three modes, each with its own expertise, theme and motion — **Pip** (JKT48 & everyday), **Pip Code** (engineering, mini apps) and **Pip Docs** (JKT48Connect API reference). Switching modes plays a circular theme wipe.
 
