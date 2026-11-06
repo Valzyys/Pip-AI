@@ -16,11 +16,13 @@ CustomEase.create("pip.pop", "0.34, 1.56, 0.64, 1");
 
 gsap.defaults({ ease: "pip.out", duration: 1 });
 
-export const reducedMotion =
-  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Motion is part of the product, so it always runs — even when the OS asks for reduced motion
+// (Windows "Animation effects" off, macOS "Reduce motion", battery saver). Kept as a flag so the
+// guards stay in place if this is ever made opt-out.
+export const reducedMotion = false as boolean;
 
 export const isTouch =
-  typeof window !== "undefined" && window.matchMedia("(hover: none), (pointer: coarse)").matches;
+  typeof window !== "undefined" && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 
 export { gsap, ScrollTrigger, ScrollSmoother, SplitText, Flip, useGSAP };
 
