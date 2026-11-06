@@ -5,9 +5,14 @@
   "compatibility_date": "2025-10-01",
   "observability": { "enabled": true },
 
+  // Wrangler builds the React app itself before every deploy / versions upload, so a
+  // Cloudflare Workers Builds project works even when its "Build command" is left empty.
+  "build": { "command": "npm run build" },
+
   // The React app (built by Vite) is served as static assets.
   // Only /api/* requests run the Worker; everything else is an asset hit.
   "assets": {
+    "directory": "./dist/client",
     "not_found_handling": "single-page-application",
     "run_worker_first": ["/api/*"]
   },
